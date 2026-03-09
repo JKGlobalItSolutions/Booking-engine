@@ -284,7 +284,9 @@ export const HotelBooking = ({ hotelId }: HotelBookingProps) => {
       setHotelLoading(true);
       setHotelError(null);
 
-      const res = await axios.get(`${apiBase}/hotel/${hotelId}`);
+      const res = await axios.get(`${apiBase}/hotel/id/${hotelId}`);
+      console.log("Fetched hotel data:", res.data);
+      console.log("Hotel UPI ID from API:", res.data?.upiId);
       setHotel(res.data);
     } catch (err: any) {
       console.error("Error fetching hotel:", err);
@@ -295,6 +297,7 @@ export const HotelBooking = ({ hotelId }: HotelBookingProps) => {
         description: "A peaceful retreat in the foothills of Arunachala. Experience spiritual rejuvenation amidst serene surroundings.",
         contact: "+91-XXXX-XXXXXX",
         address: "Friends Colony, Tiruvannamalai, Tamil Nadu, India - 606601",
+        upiId: "",
       };
       setHotel(mockHotel);
       setHotelError(null);
@@ -838,6 +841,8 @@ export const HotelBooking = ({ hotelId }: HotelBookingProps) => {
                 onMakePayment={handleMakePayment}
                 isProcessing={isProcessing}
                 total={totals.total}
+                upiId={hotel?.upiId || ""}
+                hotelName={hotel?.name || "Hotel"}
               />
             )}
 

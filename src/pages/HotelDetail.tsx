@@ -18,6 +18,7 @@ interface Hotel {
   contact: string;
   images: string[];
   path: string;
+  upiId?: string;
   createdAt: string;
   updatedAt: string;
 }

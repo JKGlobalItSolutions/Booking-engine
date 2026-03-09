@@ -22,7 +22,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import QRCode from "react-qr-code";
-import { config } from "@/config/constants";
 
 interface PaymentSectionProps {
   paymentMethod: string;
@@ -30,6 +29,8 @@ interface PaymentSectionProps {
   onMakePayment: () => void;
   isProcessing: boolean;
   total: number;
+  upiId?: string; // Hotel-specific UPI ID
+  hotelName?: string; // Hotel name for UPI link
 }
 
 export const PaymentSection = ({
@@ -38,11 +39,18 @@ export const PaymentSection = ({
   onMakePayment,
   isProcessing,
   total,
+  upiId = "",
+  hotelName = "Hotel",
 }: PaymentSectionProps) => {
   const [showQr, setShowQr] = useState(false);
 
-  // ✅ UPI ID from config
-  const upiId = config.UPI_ID;
+  // Use hotel's UPI ID or fallback to empty (should show error if not configured)
+  const activeUpiId = upiId || "";
+  
+  // Debug logs
+  console.log("PaymentSection - upiId prop:", upiId);
+  console.log("PaymentSection - hotelName prop:", hotelName);
+  console.log("PaymentSection - activeUpiId:", activeUpiId);
 
   const paymentMethods = [
     {
@@ -53,13 +61,19 @@ export const PaymentSection = ({
     },
   ];
 
-  // ✅ Dynamic UPI payment link
-  const upiLink = `upi://pay?pa=${upiId}&pn=Sonachala&am=${total}&cu=INR`;
+  // ✅ Dynamic UPI payment link using hotel's UPI ID
+  const upiLink = `upi://pay?pa=${activeUpiId}&pn=${encodeURIComponent(hotelName)}&am=${total}&cu=INR`;
 
   // ✅ Detect if user is on a mobile device
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const handlePaymentClick = (methodId: string) => {
+    // Check if UPI ID is configured
+    if (!activeUpiId) {
+      alert("UPI ID is not configured for this hotel. Please contact the hotel administrator.");
+      return;
+    }
+    
     onPaymentMethodChange(methodId);
 
     if (isMobile) {
@@ -131,11 +145,11 @@ export const PaymentSection = ({
               </p>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">{upiId}</span>
+                <span className="text-sm font-semibold">{activeUpiId}</span>
                 <Button
                   size="sm"
                   onClick={() => {
-                    navigator.clipboard.writeText(upiId);
+                    navigator.clipboard.writeText(activeUpiId);
                     alert("UPI ID copied!");
                   }}
                 >

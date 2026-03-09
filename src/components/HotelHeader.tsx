@@ -24,7 +24,7 @@ const apiBase = config.API_BASE;
   useEffect(() => {
     const fetchHotel = async () => {
       try {
-        const res = await axios.get(`${apiBase}/hotel/${hotelId}`);
+        const res = await axios.get(`${apiBase}/hotel/id/${hotelId}`);
         setHotel(res.data);
         setError(null);
       } catch (err: any) {
